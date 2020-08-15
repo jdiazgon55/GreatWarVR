@@ -4,7 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Low Poly Flat Sci Fi Assets/Demo/Scenes/Sample Scene.unity
+    guid: 0b0403de45d31496f8b90f72b42b0ba0
+  - enabled: 1
+    path: Assets/VR/Scenes/desert.unity
+    guid: 60ee7ec55613ea3438d988f3522481c2
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 382d4307d6de55041a5484ed2af76204,
       type: 2}
