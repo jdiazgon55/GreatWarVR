@@ -84,6 +84,7 @@ public class Weapon : MonoBehaviour
 	public GameObject weaponModel;						// The actual mesh for this weapon
 	public Transform raycastStartSpot;					// The spot that the raycasting weapon system should use as an origin for rays
 	public float delayBeforeFire = 0.0f;				// An optional delay that causes the weapon to fire a specified amount of time after it normally would (0 for no delay)
+	public OVRInput.Axis1D fireButton = OVRInput.Axis1D.PrimaryIndexTrigger;
 
 	// Warmup
 	public bool warmup = false;							// Whether or not the shot will be allowed to "warmup" before firing - allows power to increase when the player holds down fire button longer
@@ -136,7 +137,7 @@ public class Weapon : MonoBehaviour
 	public int shotPerRound = 1;						// The number of "bullets" that will be fired on each round.  Usually this will be 1, but set to a higher number for things like shotguns with spread
 	private int currentAmmo;							// How much ammo the weapon currently has
 	public float reloadTime = 2.0f;						// How much time it takes to reload the weapon
-	public bool showCurrentAmmo = true;					// Whether or not the current ammo should be displayed in the GUI
+	public bool showCurrentAmmo = false;					// Whether or not the current ammo should be displayed in the GUI
 	public bool reloadAutomatically = true;				// Whether or not the weapon should reload automatically when out of ammo
 
 	// Accuracy
@@ -326,7 +327,7 @@ public class Weapon : MonoBehaviour
 		{
 			if (fireTimer >= actualROF && burstCounter < burstRate && canFire)
 			{
-				if (Input.GetButton("Fire1"))
+				if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f)
 				{
 					if (!warmup)	// Normal firing when the user holds down the fire button
 					{
@@ -355,7 +356,7 @@ public class Weapon : MonoBehaviour
 		{
 			if (fireTimer >= actualROF && burstCounter < burstRate && canFire)
 			{
-				if (Input.GetButton("Fire1"))
+				if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f)
 				{
 					if (!warmup)	// Normal firing when the user holds down the fire button
 					{
@@ -393,7 +394,7 @@ public class Weapon : MonoBehaviour
 		// Shoot a beam if this is a beam type weapon and the user presses the fire button
 		if (type == WeaponType.Beam)
 		{
-			if (Input.GetButton("Fire1") && beamHeat <= maxBeamHeat && !coolingDown)
+			if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f && beamHeat <= maxBeamHeat && !coolingDown)
 			{
 				Beam();
 			}
@@ -417,7 +418,7 @@ public class Weapon : MonoBehaviour
 			Reload();
 
 		// If the weapon is semi-auto and the user lets up on the button, set canFire to true
-		if (Input.GetButtonUp("Fire1"))
+		if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f)
 			canFire = true;
 	}
 
