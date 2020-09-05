@@ -77,7 +77,7 @@ public class Weapon : MonoBehaviour
 	public int weaponType = 0;							// Bloody mess property
 
 	// Auto
-	public Auto auto = Auto.Full;						// How does this weapon fire - semi-auto or full-auto
+	public Auto auto = Auto.Semi;						// How does this weapon fire - semi-auto or full-auto
 
 	// General
 	public bool playerWeapon = true;					// Whether or not this is a player's weapon as opposed to an AI's weapon
