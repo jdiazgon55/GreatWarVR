@@ -173,6 +173,7 @@ public class Weapon : MonoBehaviour
     public GameObject[] muzzleEffects = 
         new GameObject[] {null};			            // Effects to appear at the muzzle of the gun (muzzle flash, smoke, etc.)
 	public Transform muzzleEffectsPosition;				// The spot where the muzzle effects should appear from
+	public Vector3 muzzleEffectsVector = new Vector3 (0, 0.06674254f, 1.002006f);
 	public bool makeHitEffects = true;					// Whether or not the weapon should make hit effects
 	public GameObject[] hitEffects =
         new GameObject[] {null};						// Effects to be displayed where the "bullet" hit
