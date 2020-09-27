@@ -53,6 +53,11 @@ public class OVRGrabbable : MonoBehaviour
         get { return m_grabbedBy != null; }
     }
 
+    public bool isGrabbedByLeftHand() 
+    {
+        return m_grabbedBy.isGrabbedByLeftHand();
+    }
+
 	/// <summary>
 	/// If true, the object's position will snap to match snapOffset when grabbed.
 	/// </summary>

@@ -7,7 +7,7 @@ public class ZombieManager : MonoBehaviour
 
     public float health = 150;
 
-    public Animator anim;
+    private Animator anim;
 
     // Start is called before the first frame update
     void Start()
@@ -26,12 +26,11 @@ public class ZombieManager : MonoBehaviour
     {
         // Damage has a negative value
         health += damage;
-        Debug.Log("Damage: " + damage);
-        Debug.Log("health: " + health);
+
         if (health < 0) 
         {
-            Debug.Log("Vida por debajo de cero");
             anim.Play("deaath");
+            Destroy(gameObject, 5);
         }
     }
 }

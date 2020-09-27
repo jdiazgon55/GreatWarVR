@@ -85,6 +85,7 @@ public class Weapon : MonoBehaviour
 	public Transform raycastStartSpot;					// The spot that the raycasting weapon system should use as an origin for rays
 	public float delayBeforeFire = 0.0f;				// An optional delay that causes the weapon to fire a specified amount of time after it normally would (0 for no delay)
 	public OVRInput.Axis1D fireButton = OVRInput.Axis1D.PrimaryIndexTrigger;
+	private OVRGrabbable grabbable;						// Grabbable object to check whether weapon has been picked
 
 	// Warmup
 	public bool warmup = false;							// Whether or not the shot will be allowed to "warmup" before firing - allows power to increase when the player holds down fire button longer
@@ -278,6 +279,9 @@ public class Weapon : MonoBehaviour
 			else
 				Debug.LogWarning("Default Bullet Hole Pool does not have a BulletHolePool component.  Please assign GameObjects in the inspector that have the BulletHolePool component.");
 		}
+
+		// Initialize Grabbable to check whether weapon has been picked
+		grabbable = gameObject.GetComponent<OVRGrabbable>();
 	}
 	
 	// Update is called once per frame
@@ -294,7 +298,7 @@ public class Weapon : MonoBehaviour
 		fireTimer += Time.deltaTime;
 
 		// CheckForUserInput() handles the firing based on user input
-		if (playerWeapon)
+		if (playerWeapon && grabbable.isGrabbed)
 		{
 			CheckForUserInput();
 		}
@@ -319,6 +323,13 @@ public class Weapon : MonoBehaviour
 		}
 	}
 
+	// Checks if weapon is grabbed by left or right hand. Depending on that, will check the trigger to see if it is being used
+	bool isCorrectTriggerPressed()
+	{
+		return (grabbable.isGrabbedByLeftHand() && OVRInput.Get(fireButton, OVRInput.Controller.LTouch) > 0.0f) 
+		    || (!grabbable.isGrabbedByLeftHand() && OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f); 
+	}
+
 	// Checks for user input to use the weapons - only if this weapon is player-controlled
 	void CheckForUserInput()
 	{
@@ -328,7 +339,7 @@ public class Weapon : MonoBehaviour
 		{
 			if (fireTimer >= actualROF && burstCounter < burstRate && canFire)
 			{
-				if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f)
+				if (isCorrectTriggerPressed())
 				{
 					if (!warmup)	// Normal firing when the user holds down the fire button
 					{
@@ -339,7 +350,7 @@ public class Weapon : MonoBehaviour
 						heat += Time.deltaTime;
 					}
 				}
-				if (warmup && Input.GetButtonUp("Fire1"))
+				if (warmup && isCorrectTriggerPressed())
 				{
 					if (allowCancel && Input.GetButton("Cancel"))
 					{
@@ -357,7 +368,7 @@ public class Weapon : MonoBehaviour
 		{
 			if (fireTimer >= actualROF && burstCounter < burstRate && canFire)
 			{
-				if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f)
+				if (isCorrectTriggerPressed())
 				{
 					if (!warmup)	// Normal firing when the user holds down the fire button
 					{
@@ -368,7 +379,7 @@ public class Weapon : MonoBehaviour
 						heat += Time.deltaTime;
 					}
 				}
-				if (warmup && Input.GetButtonUp("Fire1"))
+				if (warmup && isCorrectTriggerPressed())
 				{
 					if (allowCancel && Input.GetButton("Cancel"))
 					{
@@ -395,7 +406,7 @@ public class Weapon : MonoBehaviour
 		// Shoot a beam if this is a beam type weapon and the user presses the fire button
 		if (type == WeaponType.Beam)
 		{
-			if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f && beamHeat <= maxBeamHeat && !coolingDown)
+			if (isCorrectTriggerPressed() && beamHeat <= maxBeamHeat && !coolingDown)
 			{
 				Beam();
 			}
@@ -419,7 +430,7 @@ public class Weapon : MonoBehaviour
 			Reload();
 
 		// If the weapon is semi-auto and the user lets up on the button, set canFire to true
-		if (OVRInput.Get(fireButton, OVRInput.Controller.RTouch) > 0.0f)
+		if (!isCorrectTriggerPressed())
 			canFire = true;
 	}
 

@@ -99,6 +99,11 @@ public class OVRGrabber : MonoBehaviour
         }
     }
 
+    public bool isGrabbedByLeftHand () 
+    {
+        return m_controller == OVRInput.Controller.LTouch;
+    }
+
     protected virtual void Awake()
     {
         m_anchorOffsetPosition = transform.localPosition;
