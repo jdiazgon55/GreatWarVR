@@ -12,9 +12,7 @@ public class Spawner : MonoBehaviour
 	public GameObject prefabToSpawn;				// The prefab that should be spawned
 	public float spawnFrequency = 6.0f;				// The time (in seconds) between spawns
 	public bool spawnOnStart = false;				// Whether or not one instance of the prefab should be spawned on Start()
-	public bool move = true;						// Move this spawn spot around
-	public float moveAmount = 5.0f;					// The amount to move
-	public float turnAmount = 5.0f;					// The amount to turn
+	public GameObject[] spawnPositions;
 
 	private float spawnTimer = 0.0f;
 
@@ -41,18 +39,17 @@ public class Spawner : MonoBehaviour
 			Spawn();
 		}
 
-		// Move and turn so that boxes don't keep spawning in the same spots
-		transform.Translate(0, 0, moveAmount);
-		transform.Rotate(0, turnAmount, 0);
 	}
 
 	void Spawn()
 	{
+		// Get one random position from the vector of GameObjects
+		Vector3 newPosition = spawnPositions[Random.Range(0, spawnPositions.Length)].transform.position;
 		// First check to see if the prefab hasn't been set
 		if (prefabToSpawn != null)
 		{
 			// Instantiate the prefab
-			Instantiate(prefabToSpawn, transform.position, Quaternion.identity);
+			Instantiate(prefabToSpawn, newPosition, Quaternion.identity);
 		}
 	}
 }

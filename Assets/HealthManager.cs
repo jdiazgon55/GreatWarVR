@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ZombieManager : MonoBehaviour
+public class HealthManager : MonoBehaviour
 {
 
     public float health = 150;
@@ -29,7 +29,7 @@ public class ZombieManager : MonoBehaviour
 
         if (health < 0) 
         {
-            anim.Play("deaath");
+            anim.Play("death");
             Destroy(gameObject, 5);
         }
     }
