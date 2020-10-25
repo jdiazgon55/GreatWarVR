@@ -12,7 +12,8 @@ public class Spawner : MonoBehaviour
 	public GameObject prefabToSpawn;				// The prefab that should be spawned
 	public float spawnFrequency = 6.0f;				// The time (in seconds) between spawns
 	public bool spawnOnStart = false;				// Whether or not one instance of the prefab should be spawned on Start()
-	public GameObject[] spawnPositions;
+	public GameObject[] spawnPositions;				// Random spawn points for the prefab
+	public int maxSpawned = 4;						// Maximum number of objects to spawn
 
 	private float spawnTimer = 0.0f;
 
@@ -36,7 +37,11 @@ public class Spawner : MonoBehaviour
 		{
 			// First reset the spawn timer to 0
 			spawnTimer = 0.0f;
-			Spawn();
+			// Check how many enemies are already spawned
+			if (GameObject.FindGameObjectsWithTag("Enemy").Length < maxSpawned)
+			{
+				Spawn();
+			}
 		}
 
 	}
@@ -44,12 +49,14 @@ public class Spawner : MonoBehaviour
 	void Spawn()
 	{
 		// Get one random position from the vector of GameObjects
+		Debug.Log("Is it null? " + prefabToSpawn != null);
 		Vector3 newPosition = spawnPositions[Random.Range(0, spawnPositions.Length)].transform.position;
 		// First check to see if the prefab hasn't been set
 		if (prefabToSpawn != null)
 		{
 			// Instantiate the prefab
 			Instantiate(prefabToSpawn, newPosition, Quaternion.identity);
+			Debug.Log("Instantiated");
 		}
 	}
 }
