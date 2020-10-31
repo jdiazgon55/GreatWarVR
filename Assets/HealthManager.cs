@@ -6,20 +6,17 @@ public class HealthManager : MonoBehaviour
 {
 
     public float health = 150;
+    public int animatorSpeed = 2;
 
     private Animator anim;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         anim.SetBool("shouldIdle", true);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void ChangeHealth(float damage)
@@ -29,6 +26,7 @@ public class HealthManager : MonoBehaviour
 
         if (health < 0) 
         {
+            anim.speed = animatorSpeed;
             anim.Play("death");
             Destroy(gameObject, 5);
         }
