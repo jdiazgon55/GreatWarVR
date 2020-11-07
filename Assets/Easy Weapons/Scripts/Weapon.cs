@@ -617,7 +617,7 @@ public class Weapon : MonoBehaviour
 			Ray ray = new Ray(raycastStartSpot.position, direction);
 			RaycastHit hit;
 
-			if (Physics.Raycast(ray, out hit, range))
+			if (Physics.Raycast(ray, out hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
 			{
 				// Warmup heat
 				float damage = power;
@@ -626,7 +626,6 @@ public class Weapon : MonoBehaviour
 					damage *= heat * powerMultiplier;
 					heat = 0.0f;
 				}
-				
 				// Damage
 				hit.collider.gameObject.SendMessageUpwards("ChangeHealth", -damage, SendMessageOptions.DontRequireReceiver);
 				
@@ -942,7 +941,7 @@ public class Weapon : MonoBehaviour
 			// Initialize the next point.  If a raycast hit is not returned, this will be the forward direction * range
 			Vector3 nextPoint = ray.direction * range;
 
-			if (Physics.Raycast(ray, out hit, range))
+			if (Physics.Raycast(ray, out hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
 			{
 				// Set the next point to the hit location from the raycast
 				nextPoint = hit.point;

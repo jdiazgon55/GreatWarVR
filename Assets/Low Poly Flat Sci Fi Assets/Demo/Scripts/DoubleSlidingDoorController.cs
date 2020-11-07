@@ -71,8 +71,6 @@ public class DoubleSlidingDoorController : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other) {
-		
-		Debug.Log("Ha entrado en puertas");
 
 		if (status != DoubleSlidingDoorStatus.Animating) {
 			if (status == DoubleSlidingDoorStatus.Closed) {

@@ -9,6 +9,8 @@ public class HealthManager : MonoBehaviour
     public int animatorSpeed = 2;
 
     private Animator anim;
+    private AudioSource hitSound;
+    private bool shouldPlaySound = false;
 
 
 
@@ -17,15 +19,28 @@ public class HealthManager : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         anim.SetBool("shouldIdle", true);
+        
+        hitSound = GetComponent<AudioSource> ();
+        if (hitSound != null) {
+            shouldPlaySound = true;
+        }
     }
 
     void ChangeHealth(float damage)
     {
         // Damage has a negative value
         health += damage;
+        
+        if (shouldPlaySound) {
+            hitSound.Play();
+        }
+
+        Debug.Log("health: " + health);
+        Debug.Log("damage: " + damage);
 
         if (health < 0) 
         {
+            shouldPlaySound = false;
             anim.speed = animatorSpeed;
             anim.Play("death");
             Destroy(gameObject, 5);
