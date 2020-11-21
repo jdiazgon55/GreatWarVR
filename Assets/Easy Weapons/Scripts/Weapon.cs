@@ -114,6 +114,7 @@ public class Weapon : MonoBehaviour
 	public Color beamColor = Color.red;					// The color that will be used to tint the beam material
 	public float startBeamWidth = 0.5f;					// The width of the beam on the starting side
 	public float endBeamWidth = 1.0f;					// The width of the beam on the ending side
+	public bool laserMode = true;						// If true, will shoot like a laser, false like a beam
 	private float beamHeat = 0.0f;						// Timer to keep track of beam warmup and cooldown
 	private bool coolingDown = false;					// Whether or not the beam weapon is currently cooling off.  This is used to make sure the weapon isn't fired when it's too close to the maximum heat level
 	private GameObject beamGO;							// The reference to the instantiated beam GameObject
@@ -406,7 +407,7 @@ public class Weapon : MonoBehaviour
 		// Shoot a beam if this is a beam type weapon and the user presses the fire button
 		if (type == WeaponType.Beam)
 		{
-			if (isCorrectTriggerPressed() && beamHeat <= maxBeamHeat && !coolingDown)
+			if (isCorrectTriggerPressed() && beamHeat <= maxBeamHeat && !coolingDown && canFire)
 			{
 				Beam();
 			}
@@ -896,6 +897,10 @@ public class Weapon : MonoBehaviour
 		
 		// Set the beaming variable to true
 		beaming = true;
+
+		if (laserMode) {
+			canFire = false;
+		}
 		
 		// Make the beam weapon heat up as it is being used
 		if (!infiniteBeam)
@@ -1052,6 +1057,7 @@ public class Weapon : MonoBehaviour
 		beamHeat -= Time.deltaTime;
 		if (beamHeat < 0)
 			beamHeat = 0;
+		
 		GetComponent<AudioSource>().Stop();
 		
 		// Remove the visible beam effect GameObject
