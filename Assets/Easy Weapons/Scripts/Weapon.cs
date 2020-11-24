@@ -1058,7 +1058,8 @@ public class Weapon : MonoBehaviour
 		if (beamHeat < 0)
 			beamHeat = 0;
 		
-		GetComponent<AudioSource>().Stop();
+		if (laserMode)
+			GetComponent<AudioSource>().Stop();
 		
 		// Remove the visible beam effect GameObject
 		if (beamGO != null)
