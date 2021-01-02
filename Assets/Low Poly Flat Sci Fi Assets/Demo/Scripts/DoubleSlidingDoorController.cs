@@ -72,14 +72,16 @@ public class DoubleSlidingDoorController : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 
-		if (status != DoubleSlidingDoorStatus.Animating) {
-			if (status == DoubleSlidingDoorStatus.Closed) {
-				StartCoroutine ("OpenDoors");
-			}
-		}
-
-		if (other.GetComponent<Collider>().gameObject.layer == LayerMask.NameToLayer ("Characters")) {
+		if (isColliderCharacterOrPlayer(other)) {
 			objectsOnDoorArea++;
+
+			if (status != DoubleSlidingDoorStatus.Animating)
+			{
+				if (status == DoubleSlidingDoorStatus.Closed)
+				{
+					StartCoroutine("OpenDoors");
+				}
+			}
 		}
 	}
 
@@ -89,10 +91,17 @@ public class DoubleSlidingDoorController : MonoBehaviour {
 
 	void OnTriggerExit(Collider other) {
 		//	Keep tracking of objects on the door
-		if (other.GetComponent<Collider>().gameObject.layer == LayerMask.NameToLayer ("Characters")) {
+		if (isColliderCharacterOrPlayer(other)) {
 			objectsOnDoorArea--;
 		}
 	}
+
+	bool isColliderCharacterOrPlayer(Collider other)
+    {
+		if (other.GetComponent<Collider>().gameObject.layer == LayerMask.NameToLayer("Characters") || other.GetComponent<Collider>().gameObject.layer == LayerMask.NameToLayer("Player"))
+			return true;
+		return false;
+    }
 
 	IEnumerator OpenDoors () {
 

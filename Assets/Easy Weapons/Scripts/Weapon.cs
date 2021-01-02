@@ -22,7 +22,8 @@ public enum WeaponType
 {
 	Projectile,
 	Raycast,
-	Beam
+	Beam,
+	Laser
 }
 public enum Auto
 {
@@ -114,7 +115,6 @@ public class Weapon : MonoBehaviour
 	public Color beamColor = Color.red;					// The color that will be used to tint the beam material
 	public float startBeamWidth = 0.5f;					// The width of the beam on the starting side
 	public float endBeamWidth = 1.0f;					// The width of the beam on the ending side
-	public bool laserMode = true;						// If true, will shoot like a laser, false like a beam
 	private float beamHeat = 0.0f;						// Timer to keep track of beam warmup and cooldown
 	private bool coolingDown = false;					// Whether or not the beam weapon is currently cooling off.  This is used to make sure the weapon isn't fired when it's too close to the maximum heat level
 	private GameObject beamGO;							// The reference to the instantiated beam GameObject
@@ -123,13 +123,13 @@ public class Weapon : MonoBehaviour
 	// Power
 	public float power = 80.0f;							// The amount of power this weapon has (how much damage it can cause) (if the type is raycast or beam)
 	public float forceMultiplier = 10.0f;				// Multiplier used to change the amount of force applied to rigid bodies that are shot
-	public float beamPower = 1.0f;						// Used to determine damage caused by beam weapons.  This will be much lower because this amount is applied to the target every frame while firing
+	public float beamPower = 80.0f;						// Used to determine damage caused by beam weapons.  This will be much lower because this amount is applied to the target every frame while firing
 
 	// Range
 	public float range = 9999.0f;						// How far this weapon can shoot (for raycast and beam)
 
 	// Rate of Fire
-	public float rateOfFire = 10;						// The number of rounds this weapon fires per second
+	public float rateOfFire = 1;						// The number of rounds this weapon fires per second
 	private float actualROF;							// The frequency between shots based on the rateOfFire
 	private float fireTimer;							// Timer used to fire at a set frequency
 
@@ -223,7 +223,11 @@ public class Weapon : MonoBehaviour
 			actualROF = 1.0f / rateOfFire;
 		else
 			actualROF = 0.01f;
-		
+
+		// Set Rate of Fire for laser guns
+		if (type == WeaponType.Laser)
+			actualROF = 1.0f;
+
 		// Initialize the current crosshair size variable to the starting value specified by the user
 		currentCrosshairSize = startingCrosshairSize;
 
@@ -316,7 +320,7 @@ public class Weapon : MonoBehaviour
 		}
 
 		// Make sure StopBeam() is called when the weapon is no longer firing a beam (calling the Beam() method)
-		if (type == WeaponType.Beam)
+		if (type == WeaponType.Beam || type == WeaponType.Laser)
 		{
 			if (!beaming)
 				StopBeam();
@@ -335,8 +339,8 @@ public class Weapon : MonoBehaviour
 	void CheckForUserInput()
 	{
 
-		// Fire if this is a raycast type weapon and the user presses the fire button
-		if (type == WeaponType.Raycast)
+		// Fire if this is a raycast, projectile or laser type weapon and the user presses the fire button
+		if (type == WeaponType.Raycast || type == WeaponType.Projectile || type == WeaponType.Laser)
 		{
 			if (fireTimer >= actualROF && burstCounter < burstRate && canFire)
 			{
@@ -344,7 +348,7 @@ public class Weapon : MonoBehaviour
 				{
 					if (!warmup)	// Normal firing when the user holds down the fire button
 					{
-						Fire();
+						fireCorrectType();
 					}
 					else if (heat < maxWarmup)	// Otherwise just add to the warmup until the user lets go of the button
 					{
@@ -359,41 +363,12 @@ public class Weapon : MonoBehaviour
 					}
 					else
 					{
-						Fire();
+						fireCorrectType();
 					}
 				}
 			}
 		}
-		// Launch a projectile if this is a projectile type weapon and the user presses the fire button
-		if (type == WeaponType.Projectile)
-		{
-			if (fireTimer >= actualROF && burstCounter < burstRate && canFire)
-			{
-				if (isCorrectTriggerPressed())
-				{
-					if (!warmup)	// Normal firing when the user holds down the fire button
-					{
-						Launch();
-					}
-					else if (heat < maxWarmup)	// Otherwise just add to the warmup until the user lets go of the button
-					{
-						heat += Time.deltaTime;
-					}
-				}
-				if (warmup && isCorrectTriggerPressed())
-				{
-					if (allowCancel && Input.GetButton("Cancel"))
-					{
-						heat = 0.0f;
-					}
-					else
-					{
-						Launch();
-					}
-				}
-			}
-
-		}
+		
 		// Reset the Burst
 		if (burstCounter >= burstRate)
 		{
@@ -433,6 +408,23 @@ public class Weapon : MonoBehaviour
 		// If the weapon is semi-auto and the user lets up on the button, set canFire to true
 		if (!isCorrectTriggerPressed())
 			canFire = true;
+	}
+
+	// Depending on the type of weapon, call fire, launch or laserFire
+	private void fireCorrectType()
+    {
+		switch (type)
+		{
+			case WeaponType.Raycast:
+				Fire();
+				break;
+			case WeaponType.Projectile:
+				Launch();
+				break;
+			case WeaponType.Laser:
+				Beam();
+				break;
+		}
 	}
 
 	// A public method that causes the weapon to fire - can be called from other scripts - calls AI Firing for now
@@ -898,10 +890,13 @@ public class Weapon : MonoBehaviour
 		// Set the beaming variable to true
 		beaming = true;
 
-		if (laserMode) {
+		// Reset the fireTimer to 0 (for ROF)
+		fireTimer = 0.0f;
+
+		// If this is a semi-automatic weapon, set canFire to false (this means the weapon can't fire again until the player lets up on the fire button)
+		if (auto == Auto.Semi)
 			canFire = false;
-		}
-		
+
 		// Make the beam weapon heat up as it is being used
 		if (!infiniteBeam)
 			beamHeat += Time.deltaTime;
@@ -1057,9 +1052,6 @@ public class Weapon : MonoBehaviour
 		beamHeat -= Time.deltaTime;
 		if (beamHeat < 0)
 			beamHeat = 0;
-		
-		//if (laserMode)
-		//	GetComponent<AudioSource>().Stop();
 		
 		// Remove the visible beam effect GameObject
 		if (beamGO != null)
