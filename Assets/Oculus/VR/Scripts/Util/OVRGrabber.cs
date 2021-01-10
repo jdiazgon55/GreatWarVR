@@ -218,7 +218,7 @@ public class OVRGrabber : MonoBehaviour
 
     protected void CheckForGrabOrRelease(float prevFlex)
     {
-        if ((m_prevFlex >= grabBegin) && (prevFlex < grabBegin))
+        if (m_grabCandidates.Count > 0) //(m_prevFlex >= grabBegin) && (prevFlex < grabBegin)
         {
             GrabBegin();
         }

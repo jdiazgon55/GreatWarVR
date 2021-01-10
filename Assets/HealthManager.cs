@@ -26,7 +26,7 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-    void ChangeHealth(float damage)
+    public void ChangeHealth(float damage)
     {
         // Damage has a negative value
         health += damage;
@@ -34,9 +34,6 @@ public class HealthManager : MonoBehaviour
         if (shouldPlaySound) {
             hitSound.Play();
         }
-
-        Debug.Log("health: " + health);
-        Debug.Log("damage: " + damage);
 
         if (health < 0) 
         {
