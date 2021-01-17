@@ -15,6 +15,7 @@ public class Spawner : MonoBehaviour
 	public GameObject[] spawnPositions;				// Random spawn points for the prefab
 	public int maxSpawned = 4;                      // Maximum number of objects to spawn
 	public GameObject weaponSpawner;                // The enemies spawner gameobject
+	public int enemiesToKill = 4;					// Total number of enemies to kill before next gun
 
 	private float spawnTimer = 0.0f;
 	private int enemiesSpawned = 0;
@@ -63,7 +64,7 @@ public class Spawner : MonoBehaviour
 			enemiesSpawned++;
 		}
 
-		if (enemiesSpawned > 5)
+		if (enemiesSpawned > enemiesToKill)
         {
 			spawner.activateNextWeapon();
 			enemiesSpawned = 0;
